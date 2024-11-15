@@ -2,29 +2,28 @@ const logger = require('./logger');
 
 class DIDUtils {
   /**
-   * Processes and cleans a DID string
-   * @param {string} did - The DID to process
-   * @returns {string} - The cleaned DID identifier
+   * Processes multiple DIDs from environment variable
+   * @param {string} didsString - Comma separated DIDs string
+   * @returns {string[]} - Array of processed DIDs
    */
-  static processDID(did) {
+  static processDIDs(didsString) {
     try {
-      if (!did) {
-        throw new Error('DID is required');
+      if (!didsString) {
+        return [];
       }
 
-      // Remove the '0x' prefix if present
-      const cleanDID = did.startsWith('0x') ? did.slice(2) : did;
-      
-      // If it's a full DID string, extract just the identifier part
-      if (cleanDID.startsWith('did:iden3:')) {
-        const parts = cleanDID.split(':');
-        return parts[parts.length - 1];
-      }
-      
-      return cleanDID;
+      return didsString
+        .split(',')
+        .map(did => did.trim())
+        .filter(did => did)
+        .map(did => {
+          const parts = did.split('=');
+          // Return just the DID part without the private key
+          return parts[0];
+        });
     } catch (error) {
-      logger.error('Error processing DID:', error);
-      throw new Error('Invalid DID format');
+      logger.error('Error processing multiple DIDs:', error);
+      throw new Error('Invalid DIDs format');
     }
   }
 

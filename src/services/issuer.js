@@ -21,8 +21,8 @@ class IssuerService {
     try {
       // Initialize with the issuer's private key from config
       if (config.issuersPrivateKey) {
-        const did = DIDUtils.processDID(config.issuersPrivateKey);
-        this.dids.push(did);
+        const dids = DIDUtils.processDIDs(config.issuersPrivateKey);
+        this.dids.push(...dids);
       }
     } catch (error) {
       logger.error('Failed to initialize issuers:', error);
